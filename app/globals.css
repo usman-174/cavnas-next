@@ -149,25 +149,6 @@
     background: linear-gradient(to bottom, oklch(0 0 0 / 0.4), transparent, oklch(0 0 0 / 0.8));
   }
 
-  /* Entrance animations */
-  .animate-fade-in {
-    animation: fadeIn 1000ms ease-out forwards;
-  }
-
-  .animate-fade-in-delayed {
-    animation: fadeIn 1500ms ease-out 300ms forwards;
-    opacity: 0;
-  }
-
-  .animate-slide-up {
-    animation: slideUp 1000ms ease-out forwards;
-  }
-
-  .animate-slide-up-delayed {
-    animation: slideUp 1500ms ease-out 300ms forwards;
-    opacity: 0;
-  }
-
   /* Success/green text */
   .text-success {
     color: var(--success);
@@ -179,27 +160,6 @@
   [role="button"],
   [onclick] {
     cursor: pointer;
-  }
-}
-
-/* Keyframe animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 

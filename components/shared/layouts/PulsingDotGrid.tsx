@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 export function PulsingDotGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,12 +36,17 @@ export function PulsingDotGrid() {
           ctx.fill();
         }
       }
-      requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
     animate();
 
-    return () => window.removeEventListener("resize", resize);
+    return () => {
+      window.removeEventListener("resize", resize);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />;
 }
