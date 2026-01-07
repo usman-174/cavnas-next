@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
+import { GlassLoading } from '@/components/shared/GlassLoading';
+import { CabLogoFull } from '@/components/shared/logo/CabLogo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,19 +28,24 @@ export default function LoginPage() {
     name: '',
   });
 
-  const { login, register, isLoading, error, clearError, isAuthenticated } = useAuthStore();
+  const { login, register, isLoading, error, clearError, isAuthenticated, _hasHydrated } = useAuthStore();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated - check both auth and hydration state
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/');
+    if (_hasHydrated && isAuthenticated) {
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, router]);
+  }, [_hasHydrated, isAuthenticated, router]);
+
+  // Show loading while checking auth state or if authenticated
+  if (!_hasHydrated || isLoading || isAuthenticated) {
+    return <GlassLoading />;
+  }
 
   useEffect(() => {
     clearError();
@@ -63,7 +70,7 @@ export default function LoginPage() {
     }
 
     if (success) {
-      router.push('/');
+      router.push('/dashboard');
     }
   };
 
@@ -78,8 +85,8 @@ export default function LoginPage() {
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans selection:bg-white/20">
       {/* Background Layer */}
       <div className="absolute inset-0 z-0">
-        <div className="w-full h-full bg-gradient-to-br from-slate-900 via-[#0a0a0a] to-black" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
+        <div className="w-full h-full bg-linear-to-br from-slate-900 via-[#0a0a0a] to-black" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
           style={{
@@ -95,14 +102,12 @@ export default function LoginPage() {
         <div
           className={`mb-12 transition-all duration-1000 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
         >
-          <div className="w-16 h-16 rounded-full border border-white/10 bg-white/5 flex items-center justify-center backdrop-blur-md">
-            <span className="text-lg font-bold tracking-widest text-white/80">VEO</span>
-          </div>
+          <CabLogoFull />
         </div>
 
         {/* Title */}
         <div
-          className={`mb-8 text-center transition-all duration-[1500ms] delay-200 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className={`mb-8 text-center transition-all duration-1500 delay-200 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
         >
           <h1 className="text-3xl font-light tracking-tight text-white mb-2">
             {isRegister ? 'Create Account' : 'Welcome Back'}
@@ -115,7 +120,7 @@ export default function LoginPage() {
         {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className={`w-full transition-all duration-[1500ms] delay-400 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+          className={`w-full transition-all duration-1500 delay-400 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
         >
           <FieldGroup>
             {isRegister && (
@@ -128,7 +133,7 @@ export default function LoginPage() {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Alexander Sterling"
-                    className="glass border-white/10 text-white bg-white/[0.02] h-11 px-4 placeholder:text-white/30"
+                    className="glass border-white/10 text-white bg-white/2 h-11 px-4 placeholder:text-white/30"
                     required
                   />
                 </FieldContent>
@@ -144,7 +149,7 @@ export default function LoginPage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="you@example.com"
-                  className="glass border-white/10 text-white bg-white/[0.02] h-11 px-4 placeholder:text-white/30"
+                  className="glass border-white/10 text-white bg-white/2 h-11 px-4 placeholder:text-white/30"
                   required
                 />
               </FieldContent>
@@ -160,7 +165,7 @@ export default function LoginPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Enter your password"
-                    className="glass border-white/10 text-white bg-white/[0.02] h-11 px-4 pr-10 placeholder:text-white/30"
+                    className="glass border-white/10 text-white bg-white/2 h-11 px-4 pr-10 placeholder:text-white/30"
                     required
                   />
                   <Button
@@ -205,7 +210,7 @@ export default function LoginPage() {
 
         {/* Toggle Register/Login */}
         <div
-          className={`mt-8 text-center transition-all duration-[1500ms] delay-600 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+          className={`mt-8 text-center transition-all duration-1500 delay-600 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
         >
           <Button
             type="button"

@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { useAppStore } from '@/store/app-store';
 import { GlassModal } from '@/components/shared/Modal/GlassModal';
 import { ActionButton } from '@/components/shared/glassmorphic/ActionButton';
+import { CabLogoBadge } from '@/components/shared/logo/CabLogo';
 
 // Loading skeleton component for modals
 function ModalLoadingSkeleton() {
@@ -91,15 +92,15 @@ export default function DashboardPage() {
             loop
             muted
             playsInline
-            className="w-full h-full object-cover opacity-60 transition-opacity duration-[2000ms]"
+            className="w-full h-full object-cover opacity-60 transition-opacity duration-2000"
             onError={() => setVideoError(true)}
           >
             <source src="/videos/background.mp4" type="video/mp4" />
           </video>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-slate-900 via-[#0a0a0a] to-black" />
+          <div className="w-full h-full bg-linear-to-br from-slate-900 via-[#0a0a0a] to-black" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
         <div
           className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
           style={{
@@ -115,11 +116,7 @@ export default function DashboardPage() {
         <header
           className={`w-full flex justify-between items-center transition-all duration-1000 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'}`}
         >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center backdrop-blur-md">
-              <span className="text-[10px] font-bold tracking-widest text-white/80">VEO</span>
-            </div>
-          </div>
+          <CabLogoBadge />
           <button
             onClick={handleMenuClick}
             className="p-2 rounded-full hover:bg-white/5 transition-colors duration-500 cursor-pointer"
@@ -136,7 +133,7 @@ export default function DashboardPage() {
 
           {/* Label */}
           <div
-            className={`mb-6 transition-all duration-[1500ms] delay-300 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
+            className={`mb-6 transition-all duration-1500 delay-300 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}
           >
             <span className="px-4 py-1.5 rounded-full border border-white/10 bg-black/20 backdrop-blur-xl text-[10px] uppercase tracking-[0.3em] text-white/60 font-medium">
               Total Wealth
@@ -145,7 +142,7 @@ export default function DashboardPage() {
 
           {/* Amount */}
           <div
-            className={`relative transition-all duration-[1500ms] delay-500 ease-out transform ${loaded ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-12 opacity-0 blur-sm'}`}
+            className={`relative transition-all duration-1500 delay-500 ease-out transform ${loaded ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-12 opacity-0 blur-sm'}`}
           >
             <h1 className="text-6xl md:text-8xl font-light tracking-tight text-white drop-shadow-2xl">
               <span className="text-4xl md:text-6xl align-top opacity-50 mr-2">$</span>
@@ -163,7 +160,7 @@ export default function DashboardPage() {
 
         {/* Bottom Section: Actions & List */}
         <div
-          className={`w-full space-y-8 transition-all duration-[1500ms] delay-700 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
+          className={`w-full space-y-8 transition-all duration-1500 delay-700 ease-out transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
         >
 
           {/* Quick Actions - Floating Glass Bar */}
