@@ -34,7 +34,7 @@ export default function WithdrawStatusPage() {
   ];
 
   return (
-    <PageLayout title="Withdrawal Status" subtitle={`ID: ${withdrawal.id}`} showLogo={false}>
+    <PageLayout title="Withdrawal Status" subtitle={`ID: ${withdrawal.id}`}>
       <div className="space-y-6">
         {/* Status Card */}
         <GlassCard variant="default" className="p-6 text-center">

@@ -40,16 +40,11 @@ export function GlassLoading() {
         <div className="absolute w-8 h-8 rounded-full border border-white/10 animate-ping" style={{ animationDelay: '0.5s' }} />
       </div>
 
-      {/* Brand text */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <div className="text-[10px] font-bold tracking-[0.3em] text-white/40 animate-pulse">
-          VEO
-        </div>
-        <div className="flex gap-1">
-          <div className="w-1 h-1 rounded-full bg-white/30 animate-bounce" />
-          <div className="w-1 h-1 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '0.2s' }} />
-          <div className="w-1 h-1 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '0.4s' }} />
-        </div>
+      {/* Animated dots */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-1">
+        <div className="w-1 h-1 rounded-full bg-white/30 animate-bounce" />
+        <div className="w-1 h-1 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '0.2s' }} />
+        <div className="w-1 h-1 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: '0.4s' }} />
       </div>
 
       {/* Scan line effect */}

@@ -31,6 +31,7 @@ export default function HomePage() {
             <div className="flex items-center gap-6">
               <a href="#features" className="text-sm text-white/60 hover:text-white/90 transition-colors">Features</a>
               <a href="#how-it-works" className="text-sm text-white/60 hover:text-white/90 transition-colors">How It Works</a>
+              <a href="#pricing" className="text-sm text-white/60 hover:text-white/90 transition-colors">Pricing</a>
               <button
                 onClick={() => router.push("/login")}
                 className="px-5 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/15 backdrop-blur-xl text-sm text-white/90 hover:text-white transition-all duration-300"
@@ -154,6 +155,114 @@ export default function HomePage() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="py-32 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-20">
+              <h2 className="text-3xl md:text-5xl font-light text-white/90 mb-4">
+                Transparent Pricing
+              </h2>
+              <p className="text-white/50 max-w-xl mx-auto">
+                Choose the plan that works best for your wealth-building journey.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {/* Early Bird Pricing */}
+              <div className="relative">
+                {/* Limited Badge */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                  <span className="px-4 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-xs text-emerald-400 uppercase tracking-wider">
+                    Limited Spots
+                  </span>
+                </div>
+
+                <GlassCard variant="strong" className="p-8">
+                  <div className="text-center">
+                    <h3 className="text-2xl font-medium text-white/90 mb-2">Early Bird</h3>
+                    <div className="mb-6">
+                      <span className="text-4xl font-light text-white/90">$200</span>
+                      <span className="text-sm text-white/50"> service fee</span>
+                    </div>
+                    <div className="space-y-3 text-left">
+                      <div className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
+                        <span className="text-sm text-white/70">Financed at $20/mo</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
+                        <span className="text-sm text-white/70">FREE monthly subscription for life</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 mt-2 flex-shrink-0" />
+                        <span className="text-sm text-white/70">First 1K users only</span>
+                      </div>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+
+              {/* Regular Pricing */}
+              <GlassCard variant="hover" className="p-8">
+                <div className="text-center">
+                  <h3 className="text-2xl font-medium text-white/90 mb-2">Regular</h3>
+                  <div className="mb-6">
+                    <span className="text-4xl font-light text-white/90">$2,500</span>
+                    <span className="text-sm text-white/50"> service fee</span>
+                  </div>
+                  <div className="space-y-3 text-left">
+                    <div className="flex items-start gap-2">
+                      <div className="w-2 h-2 rounded-full bg-white/60 mt-2 flex-shrink-0" />
+                      <span className="text-sm text-white/50">Service fee can be financed at $20/mo</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className="w-2 h-2 rounded-full bg-white/60 mt-2 flex-shrink-0" />
+                      <span className="text-sm text-white/50">$20/mo subscription</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div className="w-2 h-2 rounded-full bg-white/60 mt-2 flex-shrink-0" />
+                      <span className="text-sm text-white/50">Total: $40/mo after financing</span>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+            </div>
+
+            {/* Important Note */}
+            <div className="max-w-2xl mx-auto mt-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl">
+                <Shield size={16} className="text-white/60" />
+                <span className="text-sm text-white/70">
+                  You pay nothing until we deposit newly built USD$ assets into your client account
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Compliance Disclosure Section */}
+        <section className="py-20 px-6 bg-black/40 backdrop-blur-xl">
+          <div className="max-w-4xl mx-auto">
+            <div className="border border-white/10 rounded-2xl p-8">
+              <h3 className="text-lg font-medium text-white/90 mb-6">Compliance & Disclosure Notice</h3>
+              <div className="text-sm text-white/60 space-y-4 leading-relaxed">
+                <p>
+                  Participation in this program is provided pursuant to a private service agreement and joint venture/co-investment framework, not a public investment offering. Fees described above are service-related fees for administrative, structuring, and asset-building services and do not constitute the purchase of securities.
+                </p>
+                <p>
+                  Any reference to "assets," "deposits," or "asset building" refers to internally structured, contract-based asset development activities performed on behalf of the client pursuant to executed agreements. No guarantees of profits, income, or specific financial outcomes are made. Timing, structure, and results may vary based on individual circumstances, participation status, and contractual performance milestones.
+                </p>
+                <p>
+                  Deferred or financed fee options are subject to approval and separate agreement terms. "Pay nothing until assets are deposited" refers to the timing of service fee collection, not a guarantee of asset creation or financial return.
+                </p>
+                <p>
+                  This program is not a bank account, brokerage account, investment fund, or publicly regulated financial product. Participation is limited and offered privately. Nothing herein constitutes legal, tax, or investment advice. Participants are encouraged to conduct independent due diligence and consult professional advisors prior to enrollment.
+                </p>
+              </div>
             </div>
           </div>
         </section>

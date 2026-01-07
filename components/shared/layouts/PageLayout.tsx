@@ -11,7 +11,6 @@ interface PageLayoutProps {
   children: React.ReactNode;
   showBackButton?: boolean;
   showHomeButton?: boolean;
-  showLogo?: boolean;
 }
 
 export function PageLayout({
@@ -20,7 +19,6 @@ export function PageLayout({
   children,
   showBackButton = true,
   showHomeButton = true,
-  showLogo = true,
 }: PageLayoutProps) {
   const [loaded, setLoaded] = useState(false);
   const router = useRouter();
@@ -64,11 +62,6 @@ export function PageLayout({
               <p className="text-xs text-white/40 mt-1">{subtitle}</p>
             )}
           </div>
-          {showLogo && (
-            <div className="w-8 h-8 rounded-full border border-white/10 bg-white/5 flex items-center justify-center backdrop-blur-md">
-              <span className="text-[10px] font-bold tracking-widest text-white/80">VEO</span>
-            </div>
-          )}
         </header>
 
         {/* Page Content */}

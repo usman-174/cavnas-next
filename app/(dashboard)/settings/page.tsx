@@ -111,11 +111,6 @@ export default function SettingsPage() {
             <span className="font-medium">Sign Out</span>
           </button>
         </div>
-
-        {/* Version Info */}
-        <div className="text-center pb-4">
-          <p className="text-xs text-white/20">VEO Wealth v1.0.0</p>
-        </div>
       </div>
     </PageLayout>
   );
