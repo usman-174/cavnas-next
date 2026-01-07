@@ -14,9 +14,17 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
-import { GlassLoading } from '@/components/shared/GlassLoading';
 import { CabLogoFull } from '@/components/shared/logo/CabLogo';
 
+/**
+ * Login Page
+ *
+ * Note: AuthProvider handles:
+ * - Redirecting to /dashboard if already authenticated
+ * - Showing loading while auth state initializes
+ *
+ * This component only needs to handle the login form.
+ */
 export default function LoginPage() {
   const router = useRouter();
   const [loaded, setLoaded] = useState(false);
@@ -28,24 +36,12 @@ export default function LoginPage() {
     name: '',
   });
 
-  const { login, register, isLoading, error, clearError, isAuthenticated, _hasHydrated } = useAuthStore();
+  const { login, register, isLoading, error, clearError } = useAuthStore();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
-
-  // Redirect if already authenticated - check both auth and hydration state
-  useEffect(() => {
-    if (_hasHydrated && isAuthenticated) {
-      router.push('/dashboard');
-    }
-  }, [_hasHydrated, isAuthenticated, router]);
-
-  // Show loading while checking auth state or if authenticated
-  if (!_hasHydrated || isLoading || isAuthenticated) {
-    return <GlassLoading />;
-  }
 
   useEffect(() => {
     clearError();
