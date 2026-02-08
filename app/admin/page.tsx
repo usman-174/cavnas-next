@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { AdminSkeleton, TableSkeleton } from '@/components/admin/admin-skeleton';
 import { AdminHeader } from '@/components/admin/admin-header';
+import { ManageUserModal } from '@/components/admin/ManageUserModal';
 
 // API helper for admin requests
 async function adminFetch<T>(endpoint: string, options?: RequestInit): Promise<{ success: boolean; data?: T; error?: string }> {
@@ -155,6 +156,7 @@ function AdminContent() {
   };
 
   const handleUpdateUser = async (userId: string, updates: { tier?: TierType; status?: UserStatus }) => {
+    if (updating) return;
     setUpdating(true);
     const response = await adminFetch<CabUser>(`/api/admin/users/${userId}`, {
       method: 'PATCH',
@@ -648,75 +650,16 @@ function AdminContent() {
         </div>
       </main>
 
-      {/* User Update Modal */}
-      {showUpdateModal && selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setShowUpdateModal(false)} />
-          <div className="relative bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-lg font-semibold text-white mb-6">Manage User</h3>
-
-            <div className="space-y-6 mb-6">
-              {/* User Info */}
-              <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                <div className="text-sm font-medium text-white">{selectedUser.name}</div>
-                <div className="text-xs text-white/40">{selectedUser.email}</div>
-                <div className="flex items-center gap-2 mt-2">
-                  {getTierBadge(selectedUser.tier)}
-                  {getStatusBadge(selectedUser.status)}
-                </div>
-              </div>
-
-              {/* Status Update */}
-              <div>
-                <label className="text-xs font-medium text-white/40 mb-3 block uppercase tracking-wider">Update Status</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {Object.values(UserStatus).map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => handleUpdateUser(selectedUser.id, { status })}
-                      disabled={updating}
-                      className={`px-3 py-2.5 rounded-lg text-xs font-medium capitalize transition-all ${selectedUser.status === status
-                        ? 'bg-white text-black'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10 border border-white/10'
-                        }`}
-                    >
-                      {status.toLowerCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tier Update */}
-              <div>
-                <label className="text-xs font-medium text-white/40 mb-3 block uppercase tracking-wider">Update Tier</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.values(TierType).map((tier) => (
-                    <button
-                      key={tier}
-                      onClick={() => handleUpdateUser(selectedUser.id, { tier })}
-                      disabled={updating}
-                      className={`px-3 py-2.5 rounded-lg text-xs font-medium capitalize transition-all ${selectedUser.tier === tier
-                        ? 'bg-white text-black'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10 border border-white/10'
-                        }`}
-                    >
-                      {tier === 'EARLY_BIRD' ? 'Early Bird' : 'Regular'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowUpdateModal(false)}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-white/10 hover:bg-white/5 text-white/80 text-sm font-medium transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+      {selectedUser && (
+        <ManageUserModal
+          open={showUpdateModal}
+          user={selectedUser}
+          updating={updating}
+          onClose={() => setShowUpdateModal(false)}
+          onUpdateUser={handleUpdateUser}
+          getTierBadge={getTierBadge}
+          getStatusBadge={getStatusBadge}
+        />
       )}
     </div>
   );
