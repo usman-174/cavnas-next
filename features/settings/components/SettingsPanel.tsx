@@ -14,6 +14,8 @@ import {
   Sun,
   Smartphone,
   Mail,
+  AlertCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,12 +43,17 @@ export function SettingsPanel() {
     preferences,
     showPasswords,
     isLoading,
+    successMessage,
+    fieldErrors,
+    user,
+    getTierLabel,
     setActiveTab,
     setProfile,
     setSecurity,
     setNotifications,
     setPreferences,
     setShowPasswords,
+    clearErrors,
     handleProfileUpdate,
     handlePasswordUpdate,
     handleLogout,
@@ -68,7 +75,10 @@ export function SettingsPanel() {
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                clearErrors();
+              }}
               className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all duration-300 ${
                 activeTab === tab.id
                   ? 'bg-white/10 text-white'
@@ -82,13 +92,29 @@ export function SettingsPanel() {
         })}
       </div>
 
+      {/* Success Message */}
+      {successMessage && (
+        <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
+          <p className="text-sm text-emerald-200">{successMessage}</p>
+        </div>
+      )}
+
+      {/* Form Error Message */}
+      {fieldErrors.form && (
+        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
+          <p className="text-sm text-red-200">{fieldErrors.form}</p>
+        </div>
+      )}
+
       {/* Tab Content */}
-      <div className="min-h-[300px]">
+      <div className="min-h-75">
         {activeTab === 'profile' && (
           <div className="space-y-6">
             {/* Profile Header */}
             <div className="flex items-center gap-4 p-4 rounded-xl glass-card border-white/10">
-              <div className="size-16 rounded-full bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+              <div className="size-16 rounded-full bg-linear-to-br from-white/10 to-white/5 flex items-center justify-center">
                 <span className="text-2xl font-light text-white/90">
                   {profile.name.charAt(0).toUpperCase()}
                 </span>
@@ -97,10 +123,33 @@ export function SettingsPanel() {
                 <div className="text-sm font-medium text-white/90">{profile.name}</div>
                 <div className="text-xs text-white/40">{profile.email}</div>
               </div>
-              <Badge variant="outline" className="glass border-white/10 text-white/60">
-                Free Plan
-              </Badge>
+              {user && (
+                <Badge
+                  variant="outline"
+                  className={`glass border-white/10 ${
+                    user.tier === 'EARLY_BIRD'
+                      ? 'text-emerald-400 border-emerald-500/20'
+                      : 'text-white/60'
+                  }`}
+                >
+                  {getTierLabel(user.tier)}
+                </Badge>
+              )}
             </div>
+
+            {/* User Info Display */}
+            {user && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg glass-card border-white/5">
+                  <div className="text-xs text-white/40 mb-1">Reservation Number</div>
+                  <div className="text-sm font-medium text-white">#{user.reservationNumber}</div>
+                </div>
+                <div className="p-3 rounded-lg glass-card border-white/5">
+                  <div className="text-xs text-white/40 mb-1">Status</div>
+                  <div className="text-sm font-medium text-white capitalize">{user.status.toLowerCase()}</div>
+                </div>
+              </div>
+            )}
 
             {/* Profile Form */}
             <FieldGroup>
@@ -110,10 +159,16 @@ export function SettingsPanel() {
                   <Input
                     placeholder="John Doe"
                     value={profile.name}
-                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="glass border-white/10 text-white bg-white/[0.02] placeholder:text-white/30"
+                    onChange={(e) => {
+                      setProfile({ ...profile, name: e.target.value });
+                      if (fieldErrors.name) clearErrors();
+                    }}
+                    className={`glass border-white/10 text-white bg-white/2 placeholder:text-white/30 ${
+                      fieldErrors.name ? 'border-red-500/30' : ''
+                    }`}
                   />
                 </FieldContent>
+                {fieldErrors.name && <p className="text-xs text-red-400 mt-1.5">{fieldErrors.name}</p>}
               </Field>
 
               <Field>
@@ -123,10 +178,16 @@ export function SettingsPanel() {
                     type="email"
                     placeholder="john@example.com"
                     value={profile.email}
-                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                    className="glass border-white/10 text-white bg-white/[0.02] placeholder:text-white/30"
+                    onChange={(e) => {
+                      setProfile({ ...profile, email: e.target.value });
+                      if (fieldErrors.email) clearErrors();
+                    }}
+                    className={`glass border-white/10 text-white bg-white/2 placeholder:text-white/30 ${
+                      fieldErrors.email ? 'border-red-500/30' : ''
+                    }`}
                   />
                 </FieldContent>
+                {fieldErrors.email && <p className="text-xs text-red-400 mt-1.5">{fieldErrors.email}</p>}
               </Field>
 
               <Field>
@@ -137,7 +198,7 @@ export function SettingsPanel() {
                     placeholder="+1 (555) 123-4567"
                     value={profile.phone}
                     onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                    className="glass border-white/10 text-white bg-white/[0.02] placeholder:text-white/30"
+                    className="glass border-white/10 text-white bg-white/2 placeholder:text-white/30"
                   />
                   <FieldDescription>Optional</FieldDescription>
                 </FieldContent>
@@ -146,9 +207,10 @@ export function SettingsPanel() {
 
             <Button
               onClick={handleProfileUpdate}
-              className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20"
+              disabled={isLoading}
+              className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20 disabled:opacity-50"
             >
-              Update Profile
+              {isLoading ? 'Updating...' : 'Update Profile'}
             </Button>
           </div>
         )}
@@ -171,8 +233,13 @@ export function SettingsPanel() {
                         type={showPasswords ? 'text' : 'password'}
                         placeholder="Enter current password"
                         value={security.currentPassword}
-                        onChange={(e) => setSecurity({ ...security, currentPassword: e.target.value })}
-                        className="glass border-white/10 text-white bg-white/[0.02] placeholder:text-white/30 pr-8"
+                        onChange={(e) => {
+                          setSecurity({ ...security, currentPassword: e.target.value });
+                          if (fieldErrors.currentPassword) clearErrors();
+                        }}
+                        className={`glass border-white/10 text-white bg-white/2 placeholder:text-white/30 pr-8 ${
+                          fieldErrors.currentPassword ? 'border-red-500/30' : ''
+                        }`}
                       />
                       <button
                         type="button"
@@ -183,6 +250,9 @@ export function SettingsPanel() {
                       </button>
                     </div>
                   </FieldContent>
+                  {fieldErrors.currentPassword && (
+                    <p className="text-xs text-red-400 mt-1.5">{fieldErrors.currentPassword}</p>
+                  )}
                 </Field>
 
                 <Field>
@@ -192,11 +262,19 @@ export function SettingsPanel() {
                       type={showPasswords ? 'text' : 'password'}
                       placeholder="Enter new password"
                       value={security.newPassword}
-                      onChange={(e) => setSecurity({ ...security, newPassword: e.target.value })}
-                      className="glass border-white/10 text-white bg-white/[0.02] placeholder:text-white/30"
+                      onChange={(e) => {
+                        setSecurity({ ...security, newPassword: e.target.value });
+                        if (fieldErrors.newPassword) clearErrors();
+                      }}
+                      className={`glass border-white/10 text-white bg-white/2 placeholder:text-white/30 ${
+                        fieldErrors.newPassword ? 'border-red-500/30' : ''
+                      }`}
                     />
-                    <FieldDescription>Minimum 8 characters</FieldDescription>
+                    <FieldDescription>Minimum 8 characters with uppercase, lowercase, numbers, or symbols</FieldDescription>
                   </FieldContent>
+                  {fieldErrors.newPassword && (
+                    <p className="text-xs text-red-400 mt-1.5">{fieldErrors.newPassword}</p>
+                  )}
                 </Field>
 
                 <Field>
@@ -206,18 +284,27 @@ export function SettingsPanel() {
                       type={showPasswords ? 'text' : 'password'}
                       placeholder="Confirm new password"
                       value={security.confirmPassword}
-                      onChange={(e) => setSecurity({ ...security, confirmPassword: e.target.value })}
-                      className="glass border-white/10 text-white bg-white/[0.02] placeholder:text-white/30"
+                      onChange={(e) => {
+                        setSecurity({ ...security, confirmPassword: e.target.value });
+                        if (fieldErrors.confirmPassword) clearErrors();
+                      }}
+                      className={`glass border-white/10 text-white bg-white/2 placeholder:text-white/30 ${
+                        fieldErrors.confirmPassword ? 'border-red-500/30' : ''
+                      }`}
                     />
                   </FieldContent>
+                  {fieldErrors.confirmPassword && (
+                    <p className="text-xs text-red-400 mt-1.5">{fieldErrors.confirmPassword}</p>
+                  )}
                 </Field>
               </FieldGroup>
 
               <Button
                 onClick={handlePasswordUpdate}
-                className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20"
+                disabled={isLoading}
+                className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20 disabled:opacity-50"
               >
-                Update Password
+                {isLoading ? 'Updating...' : 'Update Password'}
               </Button>
             </div>
 
@@ -272,9 +359,7 @@ export function SettingsPanel() {
                     </div>
                     <Switch
                       checked={notifications[setting.id]}
-                      onCheckedChange={(checked) =>
-                        setNotifications({ ...notifications, [setting.id]: checked })
-                      }
+                      onCheckedChange={(checked) => setNotifications({ ...notifications, [setting.id]: checked })}
                     />
                   </div>
                 );
@@ -292,7 +377,7 @@ export function SettingsPanel() {
                 <select
                   value={preferences.currency}
                   onChange={(e) => setPreferences({ ...preferences, currency: e.target.value })}
-                  className="w-full h-7 rounded-md border border-white/10 bg-white/[0.02] px-2 text-sm text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full h-7 rounded-md border border-white/10 bg-white/2 px-2 text-sm text-white outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="USD">USD - US Dollar</option>
                   <option value="EUR">EUR - Euro</option>
@@ -309,7 +394,7 @@ export function SettingsPanel() {
                 <select
                   value={preferences.language}
                   onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-                  className="w-full h-7 rounded-md border border-white/10 bg-white/[0.02] px-2 text-sm text-white outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full h-7 rounded-md border border-white/10 bg-white/2 px-2 text-sm text-white outline-none focus:ring-2 focus:ring-white/20"
                 >
                   <option value="en">English</option>
                   <option value="es">Spanish</option>
@@ -337,7 +422,7 @@ export function SettingsPanel() {
                       className={`flex items-center justify-center gap-2 p-3 rounded-lg border transition-all duration-300 ${
                         preferences.theme === theme.id
                           ? 'border-white/20 bg-white/10 text-white'
-                          : 'border-white/5 bg-white/[0.02] text-white/50 hover:bg-white/5'
+                          : 'border-white/5 bg-white/2 text-white/50 hover:bg-white/5'
                       }`}
                     >
                       <Icon className="size-4" />
@@ -366,7 +451,7 @@ export function SettingsPanel() {
 
       {/* App Version */}
       <div className="text-center text-xs text-white/30">
-        Version 1.0.0 • Built with Next.js & shadcn/ui
+        Version 1.0.0 • Built with Next.js
       </div>
     </div>
   );

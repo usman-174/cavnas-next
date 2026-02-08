@@ -35,6 +35,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Check if current route is a dashboard route (protected)
   const isDashboardRoute = pathname.startsWith('/dashboard');
 
+  // Check if current route is an admin route (protected)
+  const isAdminRoute = pathname.startsWith('/admin');
+
   // We're loading while auth state hydrates and initializes
   const isLoading = !_hasHydrated || !isInitialized;
 
@@ -63,18 +66,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Don't redirect while still loading
     if (isLoading) return;
 
-    // Redirect to login if not authenticated and trying to access dashboard
-    if (!isAuthenticated && isDashboardRoute) {
+    // Redirect to login if not authenticated and trying to access dashboard or admin
+    if (!isAuthenticated && (isDashboardRoute || isAdminRoute)) {
       router.replace('/login');
       return;
     }
 
-    // Redirect to dashboard if already authenticated and on login page
+    // Redirect to appropriate dashboard based on role if on login page
     if (isAuthenticated && pathname === '/login') {
+      const { isAdmin } = useAuthStore.getState();
+      router.replace(isAdmin() ? '/admin' : '/dashboard');
+      return;
+    }
+
+    // Redirect non-admins away from admin routes
+    if (isAuthenticated && isAdminRoute && !useAuthStore.getState().isAdmin()) {
       router.replace('/dashboard');
       return;
     }
-  }, [isAuthenticated, pathname, isDashboardRoute, isLoading, router]);
+  }, [isAuthenticated, pathname, isDashboardRoute, isAdminRoute, isLoading, router]);
 
   // Always show loading while initializing to prevent hydration mismatch
   if (isLoading) {

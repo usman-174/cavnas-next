@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowUpRight, ArrowDownLeft, ArrowDown, List, Wallet, CreditCard } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, ArrowDown, List, Wallet, CreditCard, Hash, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useAuthStore } from '@/store/auth-store';
@@ -10,6 +10,7 @@ import { useAppStore } from '@/store/app-store';
 import { GlassModal } from '@/components/shared/Modal/GlassModal';
 import { ActionButton } from '@/components/shared/glassmorphic/ActionButton';
 import { CabLogoBadge } from '@/components/shared/logo/CabLogo';
+import { TierType } from '@/types';
 import Link from 'next/link';
 
 // Loading skeleton component for modals
@@ -24,7 +25,7 @@ function ModalLoadingSkeleton() {
   );
 }
 
-// Dynamic imports for code splitting - these components will only load when the modal is opened
+// Dynamic imports for code splitting
 const CardsList = dynamic(() => import('@/features').then(m => ({ default: m.CardsList })), {
   loading: () => <ModalLoadingSkeleton />,
 });
@@ -49,34 +50,24 @@ export default function DashboardPage() {
     fetchTransactions();
   }, [fetchBalance, fetchTransactions]);
 
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US').format(amount);
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount);
-  };
-
   const handleLogout = async () => {
     await logout();
     router.push('/login');
   };
 
-  const displayBalance = balance?.total ?? 8240192;
-  const displayChange = balance?.change ?? 24012;
-  const displayChangePercent = balance?.changePercent ?? 0.29;
-  const displayPeriod = balance?.period ?? 'Today';
+  // Get tier display info
+  const getTierInfo = (tier?: TierType) => {
+    switch (tier) {
+      case TierType.EARLY_BIRD:
+        return { name: 'Early Bird', color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30' };
+      case TierType.REGULAR:
+        return { name: 'Regular', color: 'text-white/70', bgColor: 'bg-white/5', borderColor: 'border-white/20' };
+      default:
+        return { name: 'Standard', color: 'text-white/50', bgColor: 'bg-white/5', borderColor: 'border-white/10' };
+    }
+  };
 
-  const displayTransactions = transactions.length > 0
-    ? transactions.slice(0, 2)
-    : [
-        { id: '1', title: 'LVMH Moet Hennessy', subtitle: 'Investment Dividend', amount: 12450, date: 'Today, 9:41 AM', type: 'credit' as const },
-        { id: '2', title: 'Centurion Concierge', subtitle: 'Travel Booking', amount: 8200, date: 'Yesterday', type: 'debit' as const },
-      ];
+  const tierInfo = getTierInfo(user?.tier);
 
   return (
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans selection:bg-white/20">
@@ -127,7 +118,7 @@ export default function DashboardPage() {
           </Link>
         </motion.header>
 
-        {/* Centerpiece: Balance */}
+        {/* Centerpiece: Balance & Reservation */}
         <main className="flex-1 flex flex-col items-center justify-center w-full text-center mt-[-40px]">
 
           {/* Label */}
@@ -135,34 +126,81 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-6"
+            className="mb-8"
           >
-            <span className="px-4 py-1.5 rounded-full border border-white/10 bg-black/20 backdrop-blur-xl text-[10px] uppercase tracking-[0.3em] text-white/60 font-medium">
-              Total Wealth
-            </span>
+            <div className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-lg shadow-black/20">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-semibold bg-gradient-to-r from-white/80 to-white/40 bg-clip-text text-transparent">
+                Total Wealth
+              </span>
+            </div>
           </motion.div>
 
-          {/* Amount */}
+          {/* Amount - Infinity Symbol */}
           <motion.div
-            initial={{ opacity: 0, y: 30, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 0.8, delay: 0.15, ease: "circOut" }}
+            className="relative"
           >
-            <h1 className="text-6xl md:text-8xl font-light tracking-tight text-white drop-shadow-2xl">
-              <span className="text-4xl md:text-6xl align-top opacity-50 mr-2">$</span>
-              {formatAmount(displayBalance)}
-            </h1>
-            <div className="mt-4 flex items-center justify-center gap-2 text-emerald-400/90 text-sm font-medium tracking-wide">
-              <ArrowUpRight size={16} strokeWidth={1.5} />
-              <span>+${formatAmount(displayChange)} ({displayChangePercent}%)</span>
-              <span className="text-white/20 mx-2">|</span>
-              <span className="text-white/40 font-light">{displayPeriod}</span>
+            {/* Glow effect behind */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-indigo-500/20 blur-[60px] rounded-full pointer-events-none" />
+
+            <div className="relative flex items-center justify-center">
+              <span className="text-4xl md:text-5xl font-light text-white/30 mr-4 align-top translate-y-[-4px]">$</span>
+              <span className="text-8xl md:text-9xl font-thin tracking-tighter bg-gradient-to-b from-white via-white/90 to-white/50 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+                ∞
+              </span>
+            </div>
+
+            <div className="mt-6 flex flex-col items-center justify-center gap-1">
+              <p className="text-lg text-white/80 font-light tracking-wide">Unlimited Potential</p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="w-1 h-1 rounded-full bg-emerald-500/50 shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                <p className="text-xs text-white/40 uppercase tracking-widest font-medium">Assets Being Built</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Reservation Info Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="mt-8 w-full"
+          >
+            <div className={`p-6 rounded-2xl border ${tierInfo.borderColor} ${tierInfo.bgColor} backdrop-blur-xl`}>
+              {/* Tier Badge */}
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Crown size={16} className={tierInfo.color} />
+                <span className={`text-xs uppercase tracking-wider ${tierInfo.color} font-medium`}>
+                  {tierInfo.name} Tier
+                </span>
+              </div>
+
+              {/* Reservation Number */}
+              <div className="flex items-center justify-center gap-3">
+                <Hash size={20} className="text-white/60" />
+                <div>
+                  <div className="text-2xl font-light text-white">
+                    #{user?.reservationNumber || '---'}
+                  </div>
+                  <div className="text-xs text-white/40">Reservation Number</div>
+                </div>
+              </div>
+
+              {/* Positioning Info */}
+              <div className="mt-4 pt-4 border-t border-white/10">
+                <p className="text-xs text-white/50 leading-relaxed">
+                  Your position in the queue determines your priority for asset allocation.
+                  Early registrants receive preferential positioning in the co-investment pool.
+                </p>
+              </div>
             </div>
           </motion.div>
 
         </main>
 
-        {/* Bottom Section: Actions & List */}
+        {/* Bottom Section: Actions */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,26 +219,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Mini Transaction List */}
-          <div className="w-full">
-            <div className="flex justify-between items-end mb-4 px-2">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-white/40 font-semibold">Recent Movement</h3>
-            </div>
-
-            <div className="space-y-3">
-              {displayTransactions.map((tx) => (
-                <TransactionItem
-                  key={tx.id}
-                  title={tx.title}
-                  subtitle={tx.subtitle}
-                  amount={tx.type === 'credit' ? `+${formatCurrency(tx.amount)}` : `-${formatCurrency(tx.amount)}`}
-                  date={tx.date}
-                  isPositive={tx.type === 'credit'}
-                />
-              ))}
-            </div>
-          </div>
-
         </motion.div>
       </div>
 
@@ -215,34 +233,6 @@ export default function DashboardPage() {
       <GlassModal modalType="holdings" title="Holdings">
         <HoldingsList />
       </GlassModal>
-    </div>
-  );
-}
-
-function TransactionItem({ title, subtitle, amount, date, isPositive }: {
-  title: string;
-  subtitle: string;
-  amount: string;
-  date: string;
-  isPositive: boolean;
-}) {
-  return (
-    <div className="group flex items-center justify-between p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.06] hover:border-white/10 backdrop-blur-md transition-all duration-500 cursor-pointer">
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/60 group-hover:text-white group-hover:scale-105 transition-all duration-500">
-          {isPositive ? <ArrowDownLeft size={18} strokeWidth={1} /> : <ArrowUpRight size={18} strokeWidth={1} />}
-        </div>
-        <div>
-          <h4 className="text-sm font-medium text-white/90 tracking-wide group-hover:text-white transition-colors">{title}</h4>
-          <p className="text-xs text-white/40 tracking-wide">{subtitle}</p>
-        </div>
-      </div>
-      <div className="text-right">
-        <span className={`block text-sm font-medium tracking-wide ${isPositive ? 'text-emerald-400/90' : 'text-white/90'}`}>
-          {amount}
-        </span>
-        <span className="text-[10px] text-white/30 tracking-wider uppercase">{date}</span>
-      </div>
     </div>
   );
 }

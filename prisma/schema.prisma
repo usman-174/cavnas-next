@@ -1,0 +1,59 @@
+// CAB2Wealth Database Schema
+// Prisma v7 schema for user authentication, tier management, and reservation tracking
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User roles for access control
+enum UserRole {
+  CLIENT
+  ADMIN
+}
+
+// User account status
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+// Tier types matching pricing structure
+enum TierType {
+  EARLY_BIRD  // $200 service fee, first 1K users
+  REGULAR     // $2,500 service fee
+}
+
+// User model with tier and reservation tracking
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  passwordHash      String    @map("password_hash")
+  name              String
+  tier              TierType
+  reservationNumber Int       @map("reservation_number")
+  role              UserRole  @default(CLIENT)
+  status            UserStatus @default(PENDING)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@index([email])
+  @@index([tier])
+  @@index([role])
+  @@map("users")
+}
+
+// Tier capacity tracking for reservation limits
+model TierCapacity {
+  id           Int      @id @default(autoincrement())
+  tier         TierType @unique
+  capacity     Int
+  currentCount Int      @default(0) @map("current_count")
+
+  @@map("tier_capacities")
+}
